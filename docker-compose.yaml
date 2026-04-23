@@ -2,6 +2,7 @@ x-common-env: &common-env
   PYTHONPATH: /app
   BROKER_URL: ${BROKER_URL}
   REDIS_URL: ${REDIS_URL}
+  DEBUG: ${DEBUG}
 
 services:
   rabbitmq:
