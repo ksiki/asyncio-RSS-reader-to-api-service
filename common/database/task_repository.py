@@ -18,7 +18,7 @@ class TaskRepository:
             Task
         )
 
-    async def update_date(self, task_id:str, data: list[RSSItem]) -> None:
+    async def update_data(self, task_id:str, data: list[RSSItem]) -> None:
         task = await self.get(task_id)
         if task:
             task.data = data

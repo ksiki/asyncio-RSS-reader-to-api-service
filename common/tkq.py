@@ -23,7 +23,7 @@ async def handle_task(data_dict: dict) -> None:
     
         items: list[RSSItem] = await parser.parse(task_cfg.rss) 
         
-        await task_repository.update_date(
+        await task_repository.update_data(
             task_id=task_cfg.task_id, 
             data=items)
         await task_repository.update_status(
