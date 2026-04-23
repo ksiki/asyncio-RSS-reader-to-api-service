@@ -1,0 +1,48 @@
+x-common-env: &common-env
+  PYTHONPATH: /app
+  BROKER_URL: ${BROKER_URL}
+  REDIS_URL: ${REDIS_URL}
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  api-service:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    container_name: api-service
+    environment:
+      <<: *common-env
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    command: python -m uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - rabbitmq
+      - redis
+
+  rss-reader:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    container_name: rss-reader
+    environment:
+      <<: *common-env
+    volumes:
+      - .:/app
+    command: python -m taskiq worker common.tkq:broker --fs-discover --workers 1 --tasks-per-worker 10
+    depends_on:
+      - rabbitmq
+      - redis
