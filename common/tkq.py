@@ -1,3 +1,4 @@
+import asyncio
 from typing import Final
 
 from taskiq_aio_pika import AioPikaBroker
@@ -13,25 +14,32 @@ broker: Final[AioPikaBroker] = AioPikaBroker(url=settings.broker_url)
 
 @broker.task
 async def handle_task(data_dict: dict) -> None:
+    task_id = data_dict.get("task_id", "unknown")
+    
     try:
         task_cfg = TaskCfg.model_validate(data_dict)
 
         await task_repository.update_status(
-            task_id=task_cfg.task_id,
+            task_id=task_id,
             status=TaskStatus.IN_PROGRESS
         )
-    
-        items: list[RSSItem] = await parser.parse(task_cfg.rss) 
-        
+
+        items: list[RSSItem] = await asyncio.wait_for(
+            parser.parse(task_cfg.rss, task_cfg.filters),
+            timeout=settings.max_parsing_time
+        )
+
         await task_repository.update_data(
-            task_id=task_cfg.task_id, 
-            data=items)
+            task_id=task_id, 
+            data=items
+        )
         await task_repository.update_status(
-            task_id=task_cfg.task_id, 
-            status=TaskStatus.SUCCESS)
+            task_id=task_id, 
+            status=TaskStatus.SUCCESS
+        )
     except Exception as e:
         await task_repository.update_status(
-            task_id=task_cfg.task_id,
+            task_id=task_id,
             status=TaskStatus.FAILURE,
             error=str(e)
         )
