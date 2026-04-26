@@ -41,4 +41,4 @@ class Task(BaseModel):
     task_id: str
     task_status: TaskStatus
     data: list[RSSItem] = Field(default_factory=list)
-    error: Optional[str] = None 
+    error: Optional[str] = None

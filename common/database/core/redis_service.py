@@ -1,3 +1,4 @@
+import logging
 from typing import Final, Optional, Type, TypeVar
 
 import redis.asyncio as redis
@@ -8,6 +9,7 @@ from common.database.core.exceptions import ParseException
 
 
 T = TypeVar("T", bound=BaseModel)
+logger = logging.getLogger(__name__)
 
 
 class RedisService:
@@ -19,18 +21,20 @@ class RedisService:
 
     async def set_model(self, key: str, model: BaseModel, expire: int = 3600) -> None:
         await self._redis.set(
-            name=key, 
-            value=model.model_dump_json(), 
+            name=key,
+            value=model.model_dump_json(),
             ex=expire)
 
     async def get_model(self, key: str, model_type: Type[T]) -> Optional[T]:
         raw_data = await self._redis.get(key)
         if not raw_data:
+            logger.warning(logger=logger, text=f"Model with key={key} is not exists")
             return None
         try:
             return model_type.model_validate_json(raw_data)
         except Exception as e:
-            raise ParseException(f"Error: parse JSON into {model_type.__name__}")
+            logger.error(logger=logger, text=f"Parse JSON into {model_type.__name__}. Error: {e}")
+            raise ParseException()
 
     async def close(self) -> None:
         await self._redis.close()

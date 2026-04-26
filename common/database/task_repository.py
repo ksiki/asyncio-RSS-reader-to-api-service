@@ -1,7 +1,11 @@
+import logging
 from typing import Final, Optional
 
 from common.database.core.redis_service import redis_service
 from common.schemas import RSSItem, Task, TaskStatus
+
+
+logger = logging.getLogger(__name__)
 
 
 class TaskRepository:
@@ -14,11 +18,11 @@ class TaskRepository:
 
     async def get(self, task_id: str) -> Optional[Task]:
         return await self.redis.get_model(
-            f"{self.prefix}{task_id}", 
+            f"{self.prefix}{task_id}",
             Task
         )
 
-    async def update_data(self, task_id:str, data: list[RSSItem]) -> None:
+    async def update_data(self, task_id: str, data: list[RSSItem]) -> None:
         task = await self.get(task_id)
         if task:
             task.data = data
@@ -29,6 +33,7 @@ class TaskRepository:
         if task:
             task.task_status = status
             if error:
+                logger.info(logger=logger, text="Add error text in task")
                 task.error = error
             await self.save(task)
 
