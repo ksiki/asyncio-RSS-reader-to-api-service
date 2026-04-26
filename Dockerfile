@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV POETRY_HOME="/opt/poetry"
 RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="$POETRY_HOME/bin:$PATH"
+RUN poetry config virtualenvs.create false
 
 WORKDIR /app
 
