@@ -28,12 +28,12 @@ class RedisService:
     async def get_model(self, key: str, model_type: Type[T]) -> Optional[T]:
         raw_data = await self._redis.get(key)
         if not raw_data:
-            logger.warning(logger=logger, text=f"Model with key={key} is not exists")
+            logger.warning(msg=f"Model with key={key} is not exists")
             return None
         try:
             return model_type.model_validate_json(raw_data)
         except Exception as e:
-            logger.error(logger=logger, text=f"Parse JSON into {model_type.__name__}. Error: {e}")
+            logger.error(msg=f"Parse JSON into {model_type.__name__}. Error: {e}")
             raise ParseException()
 
     async def close(self) -> None:

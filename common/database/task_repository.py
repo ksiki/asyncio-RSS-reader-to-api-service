@@ -33,7 +33,7 @@ class TaskRepository:
         if task:
             task.task_status = status
             if error:
-                logger.info(logger=logger, text="Add error text in task")
+                logger.info(msg="Add error text in task")
                 task.error = error
             await self.save(task)
 
