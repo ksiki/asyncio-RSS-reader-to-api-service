@@ -1,6 +1,8 @@
 import logging
 from typing import Final, Optional
 
+from fastapi import HTTPException, status
+
 from common.database.core.redis_service import redis_service
 from common.schemas import RSSItem, Task, TaskStatus
 
@@ -17,10 +19,18 @@ class TaskRepository:
         await self.redis.set_model(f"{self.prefix}{task.task_id}", task)
 
     async def get(self, task_id: str) -> Optional[Task]:
-        return await self.redis.get_model(
+        task = await self.redis.get_model(
             f"{self.prefix}{task_id}",
             Task
         )
+        if not task:
+            error = f"Task with ID '{task_id}' not found"
+            logger.error(msg=error)
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=error
+            )
+        return task
 
     async def update_data(self, task_id: str, data: list[RSSItem]) -> None:
         task = await self.get(task_id)
