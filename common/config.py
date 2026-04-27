@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     redis_url: str
     max_parsing_time: int
     debug: bool
+    auto_del_msg: int
 
 
 settings: Final[Settings] = Settings(
@@ -17,6 +18,7 @@ settings: Final[Settings] = Settings(
     redis_url=config("REDIS_URL"),
     max_parsing_time=15,
     debug=config("DEBUG", default=False, cast=bool),
+    auto_del_msg=3600,
 )
 
 log_level = logging.DEBUG if settings.debug else logging.WARNING
