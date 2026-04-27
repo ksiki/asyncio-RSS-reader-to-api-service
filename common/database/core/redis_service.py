@@ -7,23 +7,16 @@ from pydantic import BaseModel
 from common.config import settings
 from common.database.core.exceptions import ParseException
 
-
 T = TypeVar("T", bound=BaseModel)
 logger = logging.getLogger(__name__)
 
 
 class RedisService:
     def __init__(self, redis_url: str):
-        self._redis = redis.from_url(
-            redis_url, 
-            decode_responses=True
-        )
+        self._redis = redis.from_url(redis_url, decode_responses=True)
 
     async def set_model(self, key: str, model: BaseModel, expire: int = 3600) -> None:
-        await self._redis.set(
-            name=key,
-            value=model.model_dump_json(),
-            ex=expire)
+        await self._redis.set(name=key, value=model.model_dump_json(), ex=expire)
 
     async def get_model(self, key: str, model_type: Type[T]) -> Optional[T]:
         raw_data = await self._redis.get(key)
@@ -40,6 +33,4 @@ class RedisService:
         await self._redis.close()
 
 
-redis_service: Final[RedisService] = RedisService(
-    redis_url=settings.redis_url
-)
+redis_service: Final[RedisService] = RedisService(redis_url=settings.redis_url)
