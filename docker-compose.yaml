@@ -48,7 +48,7 @@ services:
       <<: *common-env
     volumes:
       - .:/app
-    command: python -m taskiq worker common.tkq:broker --fs-discover --workers 1 --tasks-per-worker 10
+    command: python -m taskiq worker common.tkq:broker --fs-discover --workers 1 --max-prefetch 10
     depends_on:
-      - rabbitmq
-      - redis
+      rabbitmq:
+        condition: service_healthy
