@@ -8,8 +8,8 @@ router: Final[APIRouter] = APIRouter()
 
 
 @router.get("/status/{task_id}/")
-async def check_status(tasl_id: str) -> None:
-    return await services.check_task_status(task_id=tasl_id)
+async def check_status(task_id: str) -> None:
+    return await services.check_task_status(task_id=task_id)
 
 
 @router.get("/data/{task_id}/")

@@ -34,7 +34,7 @@ async def check_task_status(task_id: str) -> JSONResponse:
 
 
 async def get_parse_result(task_id: str) -> list[RSSItem]:
-    task: Task = task_repository.get(task_id=task_id)
+    task: Task = await task_repository.get(task_id=task_id)
     if task.task_status != TaskStatus.SUCCESS:
         error = (
             f"Task '{task_id}' is not finished yet (current status: {task.task_status})"
