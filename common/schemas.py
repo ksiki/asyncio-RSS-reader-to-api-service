@@ -1,4 +1,4 @@
-from datetime import date, time
+from datetime import date
 from enum import Enum
 from typing import Optional
 
@@ -15,16 +15,14 @@ class TaskStatus(str, Enum):
 class Filters(BaseModel):
     count_rows: int = Field(default=15, ge=1, le=150)
     start_date: Optional[date] = None
-    start_time: Optional[time] = None
     end_date: Optional[date] = None
-    end_time: Optional[time] = None
 
 
 class RSSItem(BaseModel):
     title: str
     link: str
-    summary: Optional[str] = None
-    pub_date: Optional[str] = None
+    description: Optional[str] = None
+    pub_date: Optional[date] = None
     author: Optional[str] = None
 
 

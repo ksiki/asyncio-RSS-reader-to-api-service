@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     max_parsing_time: int
     debug: bool
     auto_del_msg: int
+    fetch_timeout: int
 
 
 settings: Final[Settings] = Settings(
@@ -19,6 +20,7 @@ settings: Final[Settings] = Settings(
     max_parsing_time=15,
     debug=config("DEBUG", default=False, cast=bool),
     auto_del_msg=3600,
+    fetch_timeout=10.0,
 )
 
 log_level = logging.DEBUG if settings.debug else logging.WARNING
