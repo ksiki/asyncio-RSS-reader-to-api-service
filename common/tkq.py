@@ -31,7 +31,6 @@ async def handle_task(data_dict: dict) -> None:
             parser.parse(task_cfg.rss, task_cfg.filters),
             timeout=settings.max_parsing_time,
         )
-        await asyncio.sleep(60)
 
         await task_repository.update_data(task_id=task_id, data=items)
         logger.info(msg=f"Update data with task_id={task_id}")
